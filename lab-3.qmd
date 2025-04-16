@@ -1,5 +1,120 @@
 ---
-title: "lab-3"
-format: html
+title: "Lab 3"
+format: 
+  dashboard:
+    orientation: rows
+    nav-buttons: 
+      - icon: github
+        href: https://github.com/jgarc521/lab-3
+      - icon: envelope
+        href: "mailto:jgarc521@calpoly.edu"
+logo: wellcome-logos/wellcome-logo-black.jpg
+logo-alt: Wellcome Logo
+embed-resources: true
 ---
 
+# Perceived Knowledge about Science
+
+## Summary {height="15%"}
+
+::: card
+### Quick Insight
+
+Some important info goes here!
+:::
+
+## Trends {.tabset}
+
+### By Country
+
+```{r}
+library(tidyverse)
+library(wesanderson)
+library(leaflet)
+library(rnaturalearth)
+library(plotly)
+
+# read in data
+dict <- readxl::read_excel("/Users/josegarcia/Desktop/STAT_541/wgm2018.xlsx", sheet = "Data dictionary")
+data <- readxl::read_excel("/Users/josegarcia/Desktop/STAT_541/wgm2018.xlsx", sheet = "Full dataset") |>
+  rename(code = WP5)
+
+# country codes
+country_codes_list <- dict$`Variable Type & Codes*`[1] |>
+  str_split(", ", simplify = TRUE) |>
+  as_tibble() |>
+  pivot_longer(cols = (1:144), names_to = NULL, values_to = "col") |>
+  separate_wider_delim("col", delim = "=", names = c("code", "country")) |>
+  mutate(
+  code = as.integer(str_trim(code)),
+  country = str_trim(country) |> str_remove(",$")
+)
+
+# region codes
+region_codes_list <- dict$`Variable Type & Codes*`[57] |>
+  str_split(",", simplify = TRUE) |>
+  as_tibble() |>
+  pivot_longer(cols = everything(), names_to = NULL, values_to = "col") |>
+  mutate(col = str_trim(col)) |> # trim white space
+  filter(col != "") |> # filter out blanks
+  separate_wider_delim("col", delim = "=", names = c("Regions_Report", "region")) |>
+  mutate(
+    region_code = as.integer(str_trim(Regions_Report)),
+    region = str_trim(region),
+    Regions_Report = as.integer(Regions_Report)
+  )
+
+# join data
+full_data <- data |>
+  left_join(country_codes_list, by = "code") |>
+  left_join(region_codes_list, by = "Regions_Report")
+
+world <- ne_countries(type = "countries", scale = "small")
+
+science_pct <- full_data |>
+  mutate(country = if_else(country == "United States", "United States of America", country)) |>
+  group_by(country) |>
+  summarise(
+    total_strong = sum(Q1 %in% c(1, 2), na.rm = TRUE),
+    total = n(),
+    percent_strong = total_strong / total * 100
+  )
+
+map_data <- world |>
+  left_join(science_pct, by = c("name" = "country"))
+
+qpal <- colorNumeric("YlGnBu", domain = map_data$percent_strong, na.color = "white")
+
+leaflet(map_data) |>
+  addTiles() |>
+  addPolygons(stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+    color = ~qpal(percent_strong),
+    label = ~paste0(name, ": ", round(percent_strong, 1), "%")) |>
+  addLegend(pal = qpal, values = map_data$percent_strong, title = "Knowledge Level (%)", position = "bottomright")|>
+  addControl(
+    html = "Map of perceived knowledge about science by country",
+    position = "topright"
+  ) |>
+  setView(lng = 0, lat = 0, zoom = 2)
+
+```
+
+### By Region
+
+```{r}
+# plot here
+```
+
+# Data & Sources
+
+## About the Data
+
+::: card
+### Something about the data
+:::
+
+## Data Preview
+
+```{r}
+
+```
