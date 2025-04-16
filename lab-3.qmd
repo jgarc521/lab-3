@@ -2,6 +2,7 @@
 title: "Lab 3"
 format: 
   dashboard:
+    theme: flatly
     orientation: rows
     nav-buttons: 
       - icon: github
@@ -20,10 +21,10 @@ embed-resources: true
 ::: card
 ### Quick Insight
 
-Some important info goes here!
+🌎 Globally, 53% of those aged 15–29 say they know "some" or "a lot" about science, compared to 40% of people aged 30–49 and 34% of those 50 and older.
 :::
 
-## Trends {.tabset}
+## Plots {.tabset}
 
 ### By Country
 
@@ -36,7 +37,7 @@ library(plotly)
 
 # read in data
 dict <- readxl::read_excel("/Users/josegarcia/Desktop/STAT_541/wgm2018.xlsx", sheet = "Data dictionary")
-data <- readxl::read_excel("/Users/josegarcia/Desktop/STAT_541/wgm2018.xlsx", sheet = "Full dataset") |>
+df <- readxl::read_excel("/Users/josegarcia/Desktop/STAT_541/wgm2018.xlsx", sheet = "Full dataset") |>
   rename(code = WP5)
 
 # country codes
@@ -65,7 +66,7 @@ region_codes_list <- dict$`Variable Type & Codes*`[57] |>
   )
 
 # join data
-full_data <- data |>
+full_data <- df |>
   left_join(country_codes_list, by = "code") |>
   left_join(region_codes_list, by = "Regions_Report")
 
@@ -102,19 +103,114 @@ leaflet(map_data) |>
 ### By Region
 
 ```{r}
-# plot here
+# region pct
+region_pct <- full_data |> 
+  filter(Q1 %in% c(1, 2, 3, 4, 98), !is.na(region)) |> 
+  mutate(
+    knowledge_level = case_when(
+      Q1 == 1 ~ "A lot",
+      Q1 == 2 ~ "Some",
+      Q1 == 3 ~ "Not much",
+      Q1 %in% c(4, 98) ~ "Nothing at all / Don’t know"
+    )
+  ) |>
+  group_by(region, knowledge_level) |>
+  summarise(n = n(), .groups = "drop") |>
+  group_by(region) |>
+  mutate(percent = n / sum(n) * 100)
+
+# global pct
+global_pct <- full_data |> 
+  filter(Q1 %in% c(1, 2, 3, 4, 98)) |> 
+  mutate(
+    knowledge_level = case_when(
+      Q1 == 1 ~ "A lot",
+      Q1 == 2 ~ "Some",
+      Q1 == 3 ~ "Not much",
+      Q1 %in% c(4, 98) ~ "Nothing at all / Don’t know"
+    )
+  ) |>
+  group_by(knowledge_level) |>
+  summarise(n = n(), .groups = "drop") |>
+  mutate(
+    percent = n / sum(n) * 100,
+    region = "World"
+  )
+
+# bind 
+knowledge_all <- bind_rows(region_pct, global_pct)
+
+# order levels
+knowledge_all <- knowledge_all |> 
+  mutate(
+    knowledge_level = factor(
+      knowledge_level,
+      levels = c("A lot", "Some", "Not much", "Nothing at all / Don’t know")
+    )
+  )
+
+# custom colors (modified from previous plot)
+custom_colors <- c(
+  "A lot" = "#4292c6",                     
+  "Some" = "#6baed6",                     
+  "Not much" = "#c6dbef",                 
+  "Nothing at all / Don’t know" = "#fbd47a" 
+)
+
+# plot
+p <- ggplot(knowledge_all, aes(x = percent, y = region, fill = knowledge_level, text = paste0(
+    "Region: ", region, "<br>",
+    "Knowledge Level: ", knowledge_level, "<br>",
+    "Percent: ", round(percent, 1), "%"
+  )
+)) +
+  geom_col(width = 0.7, position = "stack") +
+  scale_fill_manual(values = custom_colors) +
+  labs(
+    title = "Perceived Knowledge of Science by Region",
+    x = "",
+    y = "",
+    fill = "Knowledge Level"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_text(size = 12)
+  )
+
+# convert to plotly
+ggplotly(p, tooltip = "text") |>
+  layout(
+    legend = list(
+      orientation = "h",
+      x = 0.5,
+      y = 1.10,
+      xanchor = "center",
+      font = list(size = 13)
+    ),
+    margin = list(t = 100)
+  )
 ```
 
 # Data & Sources
 
-## About the Data
-
-::: card
-### Something about the data
-:::
-
 ## Data Preview
 
 ```{r}
-
+#| title: Wellcome Global Monitor Report 2018 Data
+new_df <- head(df, 100)
+knitr::kable(new_df)
 ```
+
+## About the Data {height="15%"}
+
+::: card
+### [📊 Something about the Data](https://wellcome.org/reports/wellcome-global-monitor/2018)
+
+The Wellcome Global Monitor 2018 surveyed over 140,000 people aged 15 and older in more than 140 countries to understand global attitudes toward science and health. The data was collected between April and December 2018 through in-person and phone interviews. The survey asked about trust in scientists and healthcare workers, interest in science, and opinions on vaccines.
+:::
+
+
