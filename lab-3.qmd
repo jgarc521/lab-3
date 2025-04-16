@@ -19,9 +19,9 @@ embed-resources: true
 ## Summary {height="15%"}
 
 ::: card
-### Quick Insight
+### 🌎 Quick Insight
 
-🌎 Globally, 53% of those aged 15–29 say they know "some" or "a lot" about science, compared to 40% of people aged 30–49 and 34% of those 50 and older.
+Globally, 53% of those aged 15–29 say they know "some" or "a lot" about science, compared to 40% of people aged 30–49 and 34% of those 50 and older.
 :::
 
 ## Plots {.tabset}
@@ -212,5 +212,3 @@ knitr::kable(new_df)
 
 The Wellcome Global Monitor 2018 surveyed over 140,000 people aged 15 and older in more than 140 countries to understand global attitudes toward science and health. The data was collected between April and December 2018 through in-person and phone interviews. The survey asked about trust in scientists and healthcare workers, interest in science, and opinions on vaccines.
 :::
-
-

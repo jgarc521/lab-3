@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "readme.html",
+    "href": "readme.html",
+    "title": "Transforming a Report into a Dashboard",
+    "section": "",
+    "text": "For this lab assignment, you are tasked with transforming some aspect of the 2020 Wellcome Global Health Monitor Report or the 2018 Global Health Monitor Report into a dashboard. Anything in either of these reports is fair game, so find something that inspires you!\nIn case you are drawing a blank, here are some ideas:\n\ncompare data from 2018 and 2020\ncompare two aspects of the same issue (e.g., knowledge of science)\ncompare two related issues (e.g., knowledge of science and trust in science)\n\n\n\nThe dashboard you create must have the following:\n\na navigation logo (similar to the Olympic rings)\nicons to your socials (e.g., LinkedIn, Instagram, Twitter, email)\nat least two pages\nat least two tabsets (can be on just one page)\nat least two cards with quick information (e.g., % of people across the world who have faith in vaccines)\nat least on plot made with leaflet\na non-default theme\nnon-default plot colors (must coordinate with theme)\n\n\n\n\nYou are required to submit both the link to your GitHub repository containing your source code and a link to your published dashboard. You are expected to publish your dashboard through Quarto Pub, a free publishing service for static content created with Quarto."
+  },
+  {
+    "objectID": "readme.html#dashboard-requirements",
+    "href": "readme.html#dashboard-requirements",
+    "title": "Transforming a Report into a Dashboard",
+    "section": "",
+    "text": "The dashboard you create must have the following:\n\na navigation logo (similar to the Olympic rings)\nicons to your socials (e.g., LinkedIn, Instagram, Twitter, email)\nat least two pages\nat least two tabsets (can be on just one page)\nat least two cards with quick information (e.g., % of people across the world who have faith in vaccines)\nat least on plot made with leaflet\na non-default theme\nnon-default plot colors (must coordinate with theme)"
+  },
+  {
+    "objectID": "readme.html#submission",
+    "href": "readme.html#submission",
+    "title": "Transforming a Report into a Dashboard",
+    "section": "",
+    "text": "You are required to submit both the link to your GitHub repository containing your source code and a link to your published dashboard. You are expected to publish your dashboard through Quarto Pub, a free publishing service for static content created with Quarto."
+  }
+]
